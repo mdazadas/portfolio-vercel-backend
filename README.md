@@ -1,124 +1,73 @@
-# Portfolio Backend API
 
-Node.js + Express backend for MD Azad Ansari's portfolio website with Supabase (PostgreSQL) database.
+---
 
-## 🚀 Features
+Portfolio Backend API
 
-- **RESTful API** for portfolio management
-- **JWT Authentication** for admin panel
-- **Session Management** with device tracking
-- **File Upload** support (images, resume, PDFs)
-- **Rate Limiting** for security
-- **Email Notifications** (contact form)
-- **Database**: Supabase (PostgreSQL)
-- **Security**: Helmet, CORS, bcrypt password hashing
+Node.js + Express backend for portfolio website using Supabase (PostgreSQL).
 
-## 📋 Prerequisites
+Tech Stack
 
-- **Node.js** (v14 or higher)
-- **npm** or **yarn**
-- **Supabase Account** (free tier available)
+Node.js
 
-## 🔧 Setup Instructions
+Express
 
-### 1. Clone Repository
-```bash
-git clone https://github.com/your-username/portfolio.git
-cd portfolio/backend
-```
+Supabase (PostgreSQL)
 
-### 2. Install Dependencies
-```bash
-npm install
-```
+JWT Authentication
 
-### 3. Configure Supabase Database
+Multer (file upload)
 
-1. **Create Supabase Project:**
-   - Go to [https://supabase.com](https://supabase.com)
-   - Create a new project
-   - Wait for database initialization
 
-2. **Run Database Schema:**
-   - Open Supabase Dashboard → SQL Editor
-   - Copy entire content from `supabase_schema.sql`
-   - Run the SQL script
-   - Verify tables are created (admins, profiles, projects, etc.)
+Core Features
 
-3. **Get API Credentials:**
-   - Go to: Settings → API
-   - Copy **Project URL** (SUPABASE_URL)
-   - Copy **service_role key** (SUPABASE_SERVICE_KEY)
+Admin authentication (JWT)
 
-### 4. Environment Configuration
+Portfolio CRUD (Profile, Skills, Projects, Education, Services, Certificates)
 
-Create `.env` file in backend directory:
+Contact form API
 
-```bash
-cp .env.example .env
-```
+File upload (images, resume)
 
-Edit `.env` and update:
+Supabase Realtime support (live updates)
 
-```env
-# Required
+
+Prerequisites
+
+Node.js (v14+)
+
+Supabase account
+
+
+Environment Variables
+
+Create .env file:
+
 SUPABASE_URL=https://your-project-id.supabase.co
-SUPABASE_SERVICE_KEY=your_service_role_key_here
+SUPABASE_SERVICE_KEY=your_service_role_key
+JWT_SECRET=your_jwt_secret
+PASSWORD_RESET_SECRET=your_secret
+PORT=5000
 
-# JWT Secret (generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
-JWT_SECRET=your_generated_jwt_secret
+Install & Run
 
-# Password Reset Secret (change this!)
-PASSWORD_RESET_SECRET=your_custom_secret
-
-# Optional (Email)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
-```
-
-### 5. Create Admin Account
-
-Run the backend:
-```bash
+npm install
 npm run dev
-```
 
-Then make a POST request to register admin:
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Admin Name",
-    "email": "admin@example.com",
-    "password": "your_secure_password"
-  }'
-```
+Server runs on:
 
-### 6. Start Server
+http://localhost:5000
 
-**Development Mode:**
-```bash
-npm run dev
-```
+Database Setup
 
-**Production Mode:**
-```bash
-npm start
-```
+Create project in Supabase
 
-Server runs on: `http://localhost:5000`
+Run supabase_schema.sql in Supabase SQL Editor
 
-## 🔴 Enable Supabase Realtime (Live Updates)
+Tables: profiles, skills, projects, education, services, certificates, contacts, admins
 
-For real-time updates between Admin and Main page (no refresh needed):
 
-### 1. Enable Realtime on Tables
+Enable Supabase Realtime (Optional)
 
-Run this SQL in Supabase Dashboard → SQL Editor:
-
-```sql
--- Enable realtime for all portfolio tables
 ALTER PUBLICATION supabase_realtime ADD TABLE profiles;
 ALTER PUBLICATION supabase_realtime ADD TABLE skills;
 ALTER PUBLICATION supabase_realtime ADD TABLE projects;
@@ -126,177 +75,66 @@ ALTER PUBLICATION supabase_realtime ADD TABLE education;
 ALTER PUBLICATION supabase_realtime ADD TABLE services;
 ALTER PUBLICATION supabase_realtime ADD TABLE certificates;
 ALTER PUBLICATION supabase_realtime ADD TABLE contacts;
-```
 
-Or run the file: `backend/enable_realtime.sql`
+Project Structure
 
-### 2. Update Frontend Credentials
-
-Edit `frontend/js/supabase-realtime.js` and update:
-
-```javascript
-const SUPABASE_URL = 'https://YOUR-PROJECT-ID.supabase.co';
-const SUPABASE_ANON_KEY = 'your_anon_key_here';
-```
-
-Get these from: Supabase Dashboard → Settings → API → `anon` public key
-
-### 3. How It Works
-
-- **Admin makes changes** → Main page updates instantly (no refresh!)
-- **Contact form submitted** → Admin sees new message with sound notification
-- **Works across all devices** - multiple tabs/browsers stay synced
-
-## 📁 Project Structure
-
-```
 backend/
 ├── config/
-│   └── supabase.js          # Supabase client configuration
 ├── middleware/
-│   ├── auth.js              # JWT authentication middleware
-│   └── upload.js            # File upload (multer) configuration
-├── models/
-│   └── *.js                 # Database models (legacy, using Supabase now)
 ├── routes/
-│   ├── auth.js              # Authentication & sessions
-│   ├── profile.js           # Profile management
-│   ├── projects.js          # Projects CRUD
-│   ├── skills.js            # Skills CRUD
-│   ├── education.js         # Education CRUD
-│   ├── services.js          # Services CRUD
-│   ├── certificates.js      # Certificates CRUD
-│   ├── contact.js           # Contact form
-│   └── backup.js            # Data export/backup
-├── uploads/                 # Uploaded files (gitignored)
-├── .env                     # Environment variables (gitignored)
-├── .env.example             # Example environment file
-├── .gitignore               # Git ignore rules
-├── package.json             # Dependencies
-├── server.js                # Main server file
-└── supabase_schema.sql      # Database schema
-```
+├── uploads/
+├── server.js
+├── package.json
+├── supabase_schema.sql
+└── .env.example
 
-## 🔐 API Endpoints
+Important API Routes
 
-### Authentication
-- `POST /api/auth/register` - Register admin
-- `POST /api/auth/login` - Login
-- `GET /api/auth/me` - Get current admin
-- `POST /api/auth/change-password` - Change password
-- `POST /api/auth/reset-password` - Reset password
-- `GET /api/auth/sessions` - Get active sessions
-- `DELETE /api/auth/sessions` - Logout from devices
+Auth
 
-### Profile
-- `GET /api/profile` - Get profile (public)
-- `PUT /api/profile` - Update profile (admin)
-- `POST /api/profile/image` - Upload profile photo (admin)
-- `POST /api/profile/resume` - Upload resume (admin)
-- `DELETE /api/profile/image` - Delete photo (admin)
-- `DELETE /api/profile/resume` - Delete resume (admin)
+POST /api/auth/register
 
-### Projects
-- `GET /api/projects` - Get visible projects
-- `GET /api/projects/all` - Get all projects (admin)
-- `POST /api/projects` - Create project (admin)
-- `PUT /api/projects/:id` - Update project (admin)
-- `DELETE /api/projects/:id` - Delete project (admin)
+POST /api/auth/login
 
-### Skills, Education, Services, Certificates
-Similar CRUD operations for each resource.
 
-### Contact
-- `POST /api/contact` - Submit contact form (public)
-- `GET /api/contact` - Get all messages (admin)
-- `PUT /api/contact/:id/read` - Mark as read (admin)
-- `PUT /api/contact/:id/reply` - Reply to message (admin)
-- `DELETE /api/contact/:id` - Delete message (admin)
+Profile
 
-## 🛡️ Security Features
+GET /api/profile
 
-- **JWT** authentication with session tracking
-- **bcrypt** password hashing
-- **Helmet** security headers
-- **Rate limiting** on all API routes
-- **CORS** protection
-- **File upload** validation
-- **Input sanitization**
+PUT /api/profile
 
-## 📦 Dependencies
 
-```json
-{
-  "@supabase/supabase-js": "Latest Supabase client
-  "express": "Web framework",
-  "jsonwebtoken": "JWT authentication",
-  "bcryptjs": "Password hashing",
-  "multer": "File uploads",
-  "nodemailer": "Email sending",
-  "cors": "CORS middleware",
-  "helmet": "Security headers",
-  "express-rate-limit": "Rate limiting",
-  "dotenv": "Environment variables"
-}
-```
+Projects / Skills / Education / Services / Certificates
 
-## 🚀 Deployment
+Standard CRUD APIs
 
-### Vercel (Recommended for Backend)
-1. Install Vercel CLI: `npm i -g vercel`
-2. Run: `vercel`
-3. Add environment variables in Vercel dashboard
-4. Deploy: `vercel --prod`
 
-### Render / Railway
-1. Connect GitHub repository
-2. Set build command: `npm install`
-3. Set start command: `npm start`
-4. Add environment variables
-5. Deploy
+Contact
 
-## 📝 Environment Variables
+POST /api/contact
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `PORT` | No | Server port (default: 5000) |
-| `SUPABASE_URL` | **Yes** | Supabase project URL |
-| `SUPABASE_SERVICE_KEY` | **Yes** | Supabase service role key |
-| `JWT_SECRET` | **Yes** | JWT signing secret |
-| `PASSWORD_RESET_SECRET` | **Yes** | Password reset code |
-| `EMAIL_HOST` | No | SMTP host for emails |
-| `EMAIL_USER` | No | SMTP username |
-| `EMAIL_PASS` | No | SMTP password |
+GET /api/contact (admin)
 
-## 🐛 Troubleshooting
 
-### Database Connection Issues
-- Verify `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`
-- Check Supabase dashboard for project status
-- Ensure database schema is properly executed
+Deployment
 
-### File Upload Errors
-- Check `uploads/` directory permissions
-- Verify file size limits in `.env`
-- Ensure `multer` is properly configured
+Works on Render / Railway / Vercel
 
-### Authentication Failures
-- Clear browser localStorage
-- Check JWT_SECRET matches between logins
-- Verify `admin_sessions` table exists
+Build: npm install
 
-## 📄 License
+Start: npm start
 
-MIT License - feel free to use for your own portfolio!
 
-## 👤 Author
 
-**MD Azad Ansari**
-- GitHub: [@mdazad4153](https://github.com/mdazad4153)
-- LinkedIn: [mdazad4153](https://linkedin.com/in/mdazad4153)
+---
 
-## 🙏 Acknowledgments
+Agar chaho to:
 
-- Supabase for amazing backend-as-a-service
-- Express.js community
-- All open-source contributors
+aur bhi short (1-page) bana du
+
+ya sirf recruiter-friendly README version
+
+ya production-only README
+
+
+Bas bolo 👍
